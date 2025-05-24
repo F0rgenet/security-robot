@@ -8,7 +8,6 @@ class Command(Enum):
     TURN_LEFT = "turn_left"
     STOP = "stop"
 
-    
 @dataclass
 class CommandWithArguments:
     command: Command

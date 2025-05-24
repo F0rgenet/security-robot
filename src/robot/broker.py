@@ -2,7 +2,7 @@ from typing import Callable
 import paho.mqtt.client as mqtt
 from common.logged import LoggedClass
 
-class CommandBroker(LoggedClass):
+class CommandReciever(LoggedClass):
     def __init__(self):
         super().__init__()
         self.client = mqtt.Client(client_id="robot")

@@ -1,35 +1,48 @@
-import time
-import paho.mqtt.client as mqtt
+import cv2
+from system.camera import CameraProcessor
+from control import RobotFSM
 
-def on_connect(client, userdata, flags, rc):
-    print(f"Подключено с кодом результата: {rc}")
+def run_camera_processing():
+    processor = CameraProcessor(debug=True, process_frame_width=640)
 
-def on_publish(client, userdata, mid):
-    print("Сообщение отправлено")
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Ошибка: Не удалось открыть веб-камеру.")
+        return
 
-client = mqtt.Client(client_id="test", callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
-client.on_connect = on_connect
-client.on_publish = on_publish
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Ошибка: Не удалось получить кадр с веб-камеры.")
+                break
 
-error_code = client.connect("localhost")
-print("Код ошибки подключения:", error_code)
+            results = processor.get_processing_results(frame)
 
-client.loop_start()
+            distance_px = results.get("distance_px")
+            angle_deg = results.get("angle_to_target_deg")
 
-def main():
-    while True:
-        result = client.publish("robot/command", "start")
-        print(result)
-        if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            print("Опубликовано")
-        else:
-            print(f"Ошибка при публикации: {result}")
-        time.sleep(0.5)
+            dist_str = f"{distance_px:.1f} px" if distance_px is not None else "N/A"
+            angle_str = f"{angle_deg:.1f} deg" if angle_deg is not None else "N/A"
+            
+            print(f"Расстояние до цели: {dist_str}, Угол до цели: {angle_str}")
 
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+    
+    finally:
+        cap.release()
+        if processor.debug_mode:
+            final_hsv = processor.get_current_hsv_ranges()
+            print("\nИтоговые HSV диапазоны (если debug=True):")
+            for color_name, values in final_hsv.items():
+                print(f'    "{color_name}": [{values[0]}, {values[1]}, {values[2]}, {values[3]}, {values[4]}, {values[5]}],')
+            
+            processor.release_windows()
+
+        cv2.destroyAllWindows()
+        print("Веб-камера освобождена, окна закрыты.")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        client.loop_stop()
-        client.disconnect()
+    run_camera_processing()
