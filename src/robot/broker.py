@@ -3,16 +3,32 @@ import paho.mqtt.client as mqtt
 from common.logged import LoggedClass
 
 class CommandReciever(LoggedClass):
-    def __init__(self):
-        super().__init__()
-        self.client = mqtt.Client(client_id="robot")
-        self.logger.info("Инициализация командного брокера")
+    DEFAULT_MQTT_HOST = "localhost"
+    DEFAULT_MQTT_PORT = 1883
+    DEFAULT_COMMAND_TOPIC = "robot/command"
+    DEFAULT_CLIENT_ID = "robot_receiver"
+
+    def __init__(self, 
+                 host: str = DEFAULT_MQTT_HOST, 
+                 port: int = DEFAULT_MQTT_PORT,
+                 client_id: str = DEFAULT_CLIENT_ID,
+                 command_topic: str = DEFAULT_COMMAND_TOPIC):
+        super().__init__() # Если LoggedClass используется
+        self.host = host
+        self.port = port
+        self.client_id = client_id
+        self.command_topic = command_topic
+        
+        # Перемещаем создание клиента сюда, чтобы client_id применялся сразу
+        self.client = mqtt.Client(client_id=self.client_id)
+        self.logger.info(f"Инициализация CommandReciever для {self.host}:{self.port}, client_id: {self.client_id}")
         self.connected = False
+        self._commands_callback_ref: Callable | None = None # Храним ссылку на callback
 
     def connect(self, commands_callback: Callable) -> bool | None:
         self.logger.info("Подключение к MQTT...")
         try:
-            self.client.connect("192.168.1.104")
+            self.client.connect("192.168.1.101")
             self.client.subscribe("robot/command")
             self.client.on_message = self.commands_callback_builder(commands_callback)
             self.client.loop_start()
