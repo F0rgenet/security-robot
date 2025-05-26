@@ -3,7 +3,7 @@
 from common.logged import LoggedClass
 import RPi.GPIO as GPIO
 import time
-import threading # <--- Добавляем для таймеров
+import threading
 from enum import Enum
 
 class WheelState(Enum):
@@ -16,10 +16,7 @@ class Wheel(Enum):
     RIGHT = "right"
 
 class Engine(LoggedClass):
-    # Длительность выполнения одной "порции" команды движения в секундах
-    # Этот параметр определяет, как долго робот будет двигаться/поворачиваться после получения команды,
-    # прежде чем автоматически остановится.
-    DEFAULT_ACTION_DURATION_S = 0.7  # Например, 0.3 секунды. Подберите экспериментально!
+    DEFAULT_ACTION_DURATION_S = 0.25
 
     def __init__(self):
         super().__init__()

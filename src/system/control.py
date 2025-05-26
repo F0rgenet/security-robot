@@ -2,17 +2,10 @@
 
 import logging
 from enum import Enum, auto
-# Эти импорты здесь не нужны, т.к. FSM только определяет действие,
-# а отправкой занимается main.py
-# from common.command import Command
-# from broker import CommandSender
-# from common.logged import LoggedClass
 
 class RobotAction:
     def __init__(self, command: str, speed: float = 0.0, turn_angle_change: float = 0.0):
         self.command = command
-        # speed и turn_angle_change могут быть полезны для отладки или если робот поддерживает
-        # команды с параметрами скорости/угла, но ваш текущий engine.py их не использует.
         self.speed = speed
         self.turn_angle_change = turn_angle_change
 
@@ -24,14 +17,12 @@ class State:
         self.fsm = fsm
 
     def enter(self, **kwargs):
-        # print(f"Entering state: {self.__class__.__name__}") # Для отладки
         pass
 
     def execute(self, angle_to_target: float, distance_to_target: float) -> RobotAction:
         raise NotImplementedError
 
     def exit(self):
-        # print(f"Exiting state: {self.__class__.__name__}") # Для отладки
         pass
 
 class IdleState(State):
@@ -44,9 +35,9 @@ class OrientingState(State):
         if abs(angle_to_target) > self.fsm.straight_angle_threshold:
             # Угол слишком большой, нужно поворачивать
             if angle_to_target > 0: # Цель справа
-                return RobotAction(command="turn_right", speed=self.fsm.turn_speed, turn_angle_change=angle_to_target)
-            else: # Цель слева
                 return RobotAction(command="turn_left", speed=self.fsm.turn_speed, turn_angle_change=angle_to_target)
+            else: # Цель слева
+                return RobotAction(command="turn_right", speed=self.fsm.turn_speed, turn_angle_change=angle_to_target)
         else:
             # Угол в допустимых пределах для движения прямо, переходим в MOVING_FORWARD
             self.fsm.transition_to(self.fsm.states[RobotStates.MOVING_FORWARD])
@@ -82,7 +73,7 @@ class RobotStates(Enum):
 
 class RobotNavigationFSM:
     # Новый параметр для определения диапазона "прямо" (-X ... +X градусов)
-    DEFAULT_STRAIGHT_ANGLE_THRESHOLD_DEG = 15.0
+    DEFAULT_STRAIGHT_ANGLE_THRESHOLD_DEG = 40.0
 
     def __init__(self, 
                  angle_tolerance: float, # Этот tolerance для первоначального грубого выравнивания из IDLE

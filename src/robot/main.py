@@ -17,7 +17,7 @@ command_receiver = CommandReciever(host=MQTT_BROKER_HOST, port=MQTT_BROKER_PORT)
 keep_running = True
 
 # Длительность действия команды на роботе (можно сделать глобальной константой)
-ROBOT_ACTION_DURATION = 0.7 # секунды (должно совпадать с DEFAULT_ACTION_DURATION_S в Engine или передаваться)
+ROBOT_ACTION_DURATION = 0.25 # секунды (должно совпадать с DEFAULT_ACTION_DURATION_S в Engine или передаваться)
 
 def handle_command(command_str: str):
     global robot_engine # Если robot_engine - глобальная переменная

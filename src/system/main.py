@@ -9,17 +9,17 @@ import time
 def run_camera_processing():
     # FSM Configuration Parameters
     FSM_ANGLE_TOLERANCE_DEG = 25.0  # Градусы для ПЕРВИЧНОЙ (грубой) ориентации
-    FSM_STRAIGHT_MOVE_ANGLE_THRESHOLD_DEG = 15.0 # Градусы для движения прямо (-15...+15)
+    FSM_STRAIGHT_MOVE_ANGLE_THRESHOLD_DEG = 30.0 # Градусы для движения прямо (-15...+15)
     FSM_DISTANCE_TOLERANCE_PX = 50.0 # Пиксели, чтобы считать цель "достигнутой"
     FSM_TURN_SPEED = 0.5             # Условная скорость поворота (для RobotAction)
     FSM_MOVE_SPEED = 1.0             # Условная скорость движения (для RobotAction)
     
     # Интервал отправки команд роботу в секундах
-    COMMAND_SEND_INTERVAL_S = 3.0  # Например, 3 секунды
+    COMMAND_SEND_INTERVAL_S = 2.0  # Например, 3 секунды
 
     processor = CameraProcessor(debug=True, process_frame_width=640)
     # Укажите правильный IP вашего MQTT брокера
-    broker = CommandSender(host="192.168.1.101", port=1883) 
+    broker = CommandSender(host="192.168.1.101", port=1883) # TODO: Верунть 192.168.1.101
     
     fsm = RobotNavigationFSM(
         angle_tolerance=FSM_ANGLE_TOLERANCE_DEG,
