@@ -13,7 +13,7 @@ def run_camera_processing():
     FSM_ANGLE_TOLERANCE_WHILE_MOVING_DEG = 15.0 # Wider tolerance while moving
 
     processor = CameraProcessor(debug=True, process_frame_width=640)
-    broker = CommandSender(host="localhost", port=1883)
+    broker = CommandSender(host="192.168.1.104", port=1883)
     fsm = RobotNavigationFSM(
         angle_tolerance=FSM_ANGLE_TOLERANCE_DEG,
         distance_tolerance=FSM_DISTANCE_TOLERANCE_PX,

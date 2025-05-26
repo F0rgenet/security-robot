@@ -39,15 +39,7 @@ class RobotFSM(LoggedClass):
             self._send(Command.STOP)
             if dist is not None and ang is not None:
                 self.state = RobotState.ADJUSTING_ANGLE
-        # implement other handlers similarly
 
-# Example usage
-if __name__ == '__main__':
-    mqtt = CommandSender()
-    mqtt.connect()
-    fsm = RobotFSM(mqtt)
-    fsm._send(Command.MOVE_FORWARD)
-    # then in loop: fsm.update(camera_data)
 
 class RobotAction:
     def __init__(self, command: str, speed: float = 0.0, turn_angle_change: float = 0.0):
@@ -110,7 +102,7 @@ class RobotStates(Enum):
 class RobotNavigationFSM:
     def __init__(self, angle_tolerance: float, distance_tolerance: float,
                  turn_speed: float, move_speed: float,
-                 angle_tolerance_while_moving: float = None):
+                 angle_tolerance_while_moving: float):
         self.angle_tolerance = angle_tolerance
         self.distance_tolerance = distance_tolerance
         self.turn_speed = turn_speed

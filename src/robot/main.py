@@ -2,6 +2,7 @@ from common.logged import LoggedClass, configure_logger
 from robot.engine import Engine
 from common.command import Command, CommandWithArguments
 from broker import CommandReciever
+import time
 
 class Robot(LoggedClass):
     def __init__(self):
@@ -15,17 +16,17 @@ class Robot(LoggedClass):
     def process_command(self, command: Command | CommandWithArguments):
         self.logger.info(f"Обработка команды: {command}")
         match command:
-            case Command.MOVE_FORWARD:
+            case Command.MOVE_FORWARD.value:
                 print("Вперёд")
-                self.engine.forward(move_time=1)
-            case Command.TURN_RIGHT:
+                self.engine.forward()
+            case Command.TURN_RIGHT.value:
                 print("Направо")
                 self.engine.turn_right()
-            case Command.TURN_LEFT:
+            case Command.TURN_LEFT.value:
                 print("Налево")
                 self.engine.turn_left()
-            case Command.STOP:
-                print("Стоп")
+            case Command.STOP.value:
+                self.logger.error("СТОП")
                 self.engine.stop()
     
     def start(self):
@@ -34,7 +35,7 @@ class Robot(LoggedClass):
         self.running = status
         while self.running:
             pass
-    
+
     def stop(self):
         self.running = False
         self.logger.info("Остановка робота...")

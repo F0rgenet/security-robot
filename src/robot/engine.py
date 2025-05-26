@@ -25,12 +25,11 @@ class Engine(LoggedClass):
         self.ENB = 26
 
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.IN1, GPIO.OUT)
-        GPIO.setup(self.IN2, GPIO.OUT)
-        GPIO.setup(self.IN3, GPIO.OUT)
-        GPIO.setup(self.IN4, GPIO.OUT)
-        GPIO.setup(self.ENA, GPIO.OUT)
-        GPIO.setup(self.ENB, GPIO.OUT)
+        for pin in (self.IN1, self.IN2, self.IN3, self.IN4, self.ENA, self.ENB):
+            GPIO.setup(pin, GPIO.OUT)
+
+        GPIO.output(self.ENA, GPIO.HIGH)
+        GPIO.output(self.ENB, GPIO.HIGH)
     
     def control_wheel(self, wheel: Wheel, wheel_state: WheelState):
         self.logger.info(f"Контроль колеса {wheel}: {wheel_state}")
@@ -44,13 +43,10 @@ class Engine(LoggedClass):
             GPIO.output(pins[1], GPIO.LOW)
         
 
-    def forward(self, move_time: float):
+    def forward(self):
         self.logger.info("Начало движения вперёд...")
         self.control_wheel(Wheel.LEFT, WheelState.FORWARD)
         self.control_wheel(Wheel.RIGHT, WheelState.FORWARD)
-        time.sleep(move_time)
-        self.stop()
-        self.logger.success("Движение вперёд завершено")
     
     def stop(self):
         self.logger.info("Остановка двигателя...")
@@ -68,7 +64,3 @@ class Engine(LoggedClass):
         self.logger.info("Поворот направо...")
         self.control_wheel(Wheel.LEFT, WheelState.FORWARD)
         self.control_wheel(Wheel.RIGHT, WheelState.REVERSE)
-
-
-engine = Engine()
-engine.forward(move_time=1)

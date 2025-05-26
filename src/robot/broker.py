@@ -12,7 +12,7 @@ class CommandReciever(LoggedClass):
     def connect(self, commands_callback: Callable) -> bool | None:
         self.logger.info("Подключение к MQTT...")
         try:
-            self.client.connect("localhost")
+            self.client.connect("192.168.1.104")
             self.client.subscribe("robot/command")
             self.client.on_message = self.commands_callback_builder(commands_callback)
             self.client.loop_start()
