@@ -15,7 +15,7 @@ def run_camera_processing():
     COMMAND_SEND_INTERVAL_S = 2.0
 
     processor = CameraProcessor(debug=True, process_frame_width=640)
-    broker = CommandSender(host="192.168.1.101", port=1883)
+    broker = CommandSender(host="192.168.1.104", port=1883) # 192.168.1.104
     
     fsm = RobotNavigationFSM(
         angle_tolerance=FSM_ANGLE_TOLERANCE_DEG,

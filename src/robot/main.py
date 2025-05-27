@@ -5,7 +5,7 @@ from broker import CommandReciever
 from common.command import Command as CommonCommand
 
 # --- Конфигурация ---
-MQTT_BROKER_HOST = "192.168.1.101"
+MQTT_BROKER_HOST = "192.168.1.104"
 MQTT_BROKER_PORT = 1883
 MQTT_COMMAND_TOPIC = "robot/command"
 # --------------------

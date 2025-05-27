@@ -77,14 +77,8 @@ scp -r ./src/ user@192.168.1.102:/home/user/Pavel/ # Скопировать па
 Затем на роботе:
 
 ```bash
-# По SSH на роботе:
 ssh user@192.168.1.102
-# Введите пароль (например, qwe123)
-
-cd /home/user/Pavel/src # Переход в директорию с кодом на роботе
-export PYTHONPATH=$(pwd) # Добавление текущей директории в PYTHONPATH
-cd robot # Если main.py находится в директории robot внутри src
-python main.py
+cd Pavel/src/robot && export PYTHONPATH=$(pwd)/../ && python main.py
 ```
 
 ### 3. Завершение работы
@@ -110,3 +104,16 @@ python main.py
 └── common/
     ├── __init__.py
     └── command.py              # Определяет перечисление Command для действий робота
+```
+
+# Финальный тест
+
+```bash
+ssh user@192.168.1.102
+cd Pavel/src/robot && export PYTHONPATH=$(pwd)/../ && python main.py
+```
+
+```bash
+export PYTHONPATH=$(pwd)/src
+python src/system/main.py
+```
