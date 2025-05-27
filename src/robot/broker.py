@@ -13,17 +13,16 @@ class CommandReciever(LoggedClass):
                  port: int = DEFAULT_MQTT_PORT,
                  client_id: str = DEFAULT_CLIENT_ID,
                  command_topic: str = DEFAULT_COMMAND_TOPIC):
-        super().__init__() # Если LoggedClass используется
+        super().__init__()
         self.host = host
         self.port = port
         self.client_id = client_id
         self.command_topic = command_topic
         
-        # Перемещаем создание клиента сюда, чтобы client_id применялся сразу
         self.client = mqtt.Client(client_id=self.client_id)
         self.logger.info(f"Инициализация CommandReciever для {self.host}:{self.port}, client_id: {self.client_id}")
         self.connected = False
-        self._commands_callback_ref: Callable | None = None # Храним ссылку на callback
+        self._commands_callback_ref: Callable | None = None
 
     def connect(self, commands_callback: Callable) -> bool | None:
         self.logger.info("Подключение к MQTT...")
@@ -47,7 +46,6 @@ class CommandReciever(LoggedClass):
 
     def commands_callback_builder(self, commands_callback: Callable):
         def on_message(client, userdata, message):
-            # TODO: Работать с payload
             self.logger.info(f"Получено сообщение: {message.payload.decode()}")
             command = message.payload.decode()
             self.logger.info(f"Команда: {command}")

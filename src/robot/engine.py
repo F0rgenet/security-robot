@@ -1,5 +1,3 @@
-# src/robot/engine.py
-
 from common.logged import LoggedClass
 import RPi.GPIO as GPIO
 import time
@@ -35,30 +33,25 @@ class Engine(LoggedClass):
         GPIO.output(self.ENA, GPIO.HIGH)
         GPIO.output(self.ENB, GPIO.HIGH)
 
-        self._current_action_timer = None # Для хранения ссылки на активный таймер
+        self._current_action_timer = None
 
     def _cancel_previous_action_timer(self):
-        """Отменяет предыдущий активный таймер авто-остановки, если он есть."""
         if self._current_action_timer and self._current_action_timer.is_alive():
             self._current_action_timer.cancel()
-            # self.logger.debug("Previous action timer cancelled.")
         self._current_action_timer = None
 
     def _start_action_timer(self, duration: float):
-        """Запускает таймер, который вызовет _auto_stop через 'duration' секунд."""
-        self._cancel_previous_action_timer() # Отменяем старый таймер перед запуском нового
+        self._cancel_previous_action_timer()
         self._current_action_timer = threading.Timer(duration, self._auto_stop)
         self._current_action_timer.start()
 
     def _auto_stop(self):
-        """Метод, вызываемый таймером для автоматической остановки моторов."""
         self.logger.info(f"Авто-остановка после {self.DEFAULT_ACTION_DURATION_S} сек.")
         self.control_wheel(Wheel.LEFT, WheelState.STOP)
         self.control_wheel(Wheel.RIGHT, WheelState.STOP)
-        self._current_action_timer = None # Сбрасываем таймер
+        self._current_action_timer = None
 
     def control_wheel(self, wheel: Wheel, wheel_state: WheelState):
-        # self.logger.debug(f"Control wheel {wheel.value}: {wheel_state.value}") # Для отладки
         pins = (self.IN1, self.IN2) if wheel == Wheel.LEFT else (self.IN4, self.IN3)
         if wheel_state == WheelState.FORWARD:
             GPIO.output(pins[0], GPIO.HIGH)
@@ -66,7 +59,7 @@ class Engine(LoggedClass):
         elif wheel_state == WheelState.REVERSE:
             GPIO.output(pins[0], GPIO.LOW)
             GPIO.output(pins[1], GPIO.HIGH)
-        else: # WheelState.STOP
+        else:
             GPIO.output(pins[0], GPIO.LOW)
             GPIO.output(pins[1], GPIO.LOW)
 
@@ -77,12 +70,8 @@ class Engine(LoggedClass):
         self._start_action_timer(duration)
     
     def stop(self):
-        """
-        Принудительная остановка по команде от управляющего ПК.
-        Отменяет любой таймер и останавливает моторы.
-        """
         self.logger.info("Команда STOP: Остановка двигателя...")
-        self._cancel_previous_action_timer() # Важно отменить таймер
+        self._cancel_previous_action_timer()
         self.control_wheel(Wheel.LEFT, WheelState.STOP)
         self.control_wheel(Wheel.RIGHT, WheelState.STOP)
         self.logger.success("Двигатель остановлен по команде STOP")
@@ -100,8 +89,7 @@ class Engine(LoggedClass):
         self._start_action_timer(duration)
 
     def cleanup(self):
-        """Метод для очистки GPIO при завершении работы."""
         self.logger.info("Очистка GPIO...")
-        self.stop() # Убедимся, что моторы остановлены и таймеры отменены
+        self.stop()
         GPIO.cleanup()
         self.logger.success("GPIO очищен.")

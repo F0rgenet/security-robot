@@ -1,4 +1,3 @@
-from enum import Enum
 import paho.mqtt.client as mqtt
 from common.logged import LoggedClass
 from common.command import Command
